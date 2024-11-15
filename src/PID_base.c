@@ -26,7 +26,7 @@ PID_base* createPID_base(float kp, float ki, float kd){
     return NULL;
 }
 
-float scaleToRange(double input, double in_min, double in_max, double out_min, double out_max){
+double scaleToRange(double input, double in_min, double in_max, double out_min, double out_max){
     if (input < in_min) input = in_min;
     if (input > in_max) input = in_max;
 
@@ -34,13 +34,13 @@ float scaleToRange(double input, double in_min, double in_max, double out_min, d
 }
 
 
-void* *setTime(PID_base* self, time td){
+void setTime(PID_base* self, time td){
     if(self){
         self->td = td;
     }
 }
 
-double *compute(PID_base *self, double target, double current){
+double compute(PID_base *self, double target, double current){
     if(self && self->td > 0){
         double resP, resI, resD, der, res;
         double err = target - current;
@@ -58,12 +58,22 @@ double *compute(PID_base *self, double target, double current){
 
         res = resP + resI + resD;
         return res;
-
-
     }
     return 0;
 }
-unsigned char *compute_PWM(PID_base *self, double target, double current);
 
 
-void *deletePID_base(PID_base* self);
+unsigned char compute_PWM(PID_base *self, double target, double current){
+    if(self){
+        double compute = self->compute(self, target, current);
+        return (unsigned char)scaleToRange(compute, -1000, 1000, 0, 255);
+    }
+    return 0;
+}
+
+
+void deletePID_base(PID_base* self){
+    if(self){
+        free(self);
+    }
+}
