@@ -10,12 +10,15 @@ typedef struct PID_base{
     float ki;       
     float kd;
 
+    double prev_err;
+    double integral;
+
     time td;
 
 
     void* (*setTime)(PID_base* self, time td);
 
-    float (*compute)(PID_base *self, double target, double current);
+    double (*compute)(PID_base *self, double target, double current);
     unsigned char (*compute_PWM)(PID_base *self, double target, double current);
 
 
@@ -31,7 +34,7 @@ float scaleToRange(double input, double in_min, double in_max, double out_min, d
 
 void* *setTime(PID_base* self, time td);
 
-float *compute(PID_base *self, double target, double current);
+double *compute(PID_base *self, double target, double current);
 unsigned char *compute_PWM(PID_base *self, double target, double current);
 
 
